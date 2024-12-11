@@ -26,7 +26,7 @@ namespace RazorGenerator.MsBuild
         [Required]
         public string CodeGenDirectory { get; set; }
 
-        public string Suffix { get; set; }
+        public string Suffix { get; set; } = string.Empty;
         [Output]
         public ITaskItem[] GeneratedFiles
         {

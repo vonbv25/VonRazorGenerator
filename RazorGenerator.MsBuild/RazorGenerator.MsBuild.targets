@@ -44,7 +44,7 @@
         <RazorCodeGen ProjectRoot="$(MsBuildProjectDirectory)"
                                     FilesToPrecompile="@(RazorSrcFiles)"
                                     CodeGenDirectory="$(RazorViewsCodeGenDirectory)"
-									Suffix="$(Suffix)"
+									Suffix="$(RazorFileSuffix)"
                                     RootNamespace="$(RootNamespace)">
             <Output TaskParameter="GeneratedFiles" ItemName="FilesGenerated" />
         </RazorCodeGen>
