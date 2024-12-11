@@ -26,6 +26,7 @@ namespace RazorGenerator.MsBuild
         [Required]
         public string CodeGenDirectory { get; set; }
 
+        public string Suffix { get; set; }
         [Output]
         public ITaskItem[] GeneratedFiles
         {
@@ -61,13 +62,13 @@ namespace RazorGenerator.MsBuild
                 foreach (var file in FilesToPrecompile)
                 {
                     string filePath = file.GetMetadata("FullPath");
-                    string fileName = Path.GetFileNameWithoutExtension(filePath); // Remove original file extension
+                    string fileName = Path.GetFileNameWithoutExtension(filePath);
                     var projectRelativePath = GetProjectRelativePath(filePath, projectRoot);
                     string itemNamespace = GetNamespace(file, projectRelativePath);
 
                     // Set the output path with the new suffix
                     string outputPath = Path.Combine(CodeGenDirectory, projectRelativePath.TrimStart(Path.DirectorySeparatorChar));
-                    outputPath = Path.ChangeExtension(outputPath, ".generated.cs"); // Change extension to .generated.cs
+                    outputPath = Path.ChangeExtension(outputPath, $"{Suffix}.cs");
 
                     if (!RequiresRecompilation(filePath, outputPath))
                     {
@@ -119,6 +120,9 @@ namespace RazorGenerator.MsBuild
             return true;
         }
 
+        /// <summary>
+        /// Determines if the file has a corresponding output code-gened file that does not require updating.
+        /// </summary>
         private static bool RequiresRecompilation(string filePath, string outputPath)
         {
             if (!File.Exists(outputPath))
@@ -136,6 +140,8 @@ namespace RazorGenerator.MsBuild
                 return itemNamespace;
             }
             projectRelativePath = Path.GetDirectoryName(projectRelativePath);
+            // To keep the namespace consistent with VS, need to generate a namespace based on the folder path if no namespace is specified.
+            // Also replace any non-alphanumeric characters with underscores.
 
             itemNamespace = projectRelativePath.Trim(Path.DirectorySeparatorChar);
             if (String.IsNullOrEmpty(itemNamespace))
